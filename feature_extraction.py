@@ -33,7 +33,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     TRAIN_DIR, LABEL_PATH = '/data/train', '/data/train/label.csv'
-    HEATMAP_DIR, FEATURE_DIR, PATCHES_DIR = args.heatmap_dir, args.feature_dir, args.patches_dir
+    MODEL_NAME, HEATMAP_DIR, FEATURE_DIR, PATCHES_DIR = args.model_name, args.heatmap_dir, args.feature_dir, args.patches_dir
 
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -155,5 +155,5 @@ if __name__ == "__main__":
         full_feature_list.append(feature_list)
 
     pd_feature = pd.DataFrame(np.array(full_feature_list), columns=feature_name_list)
-    save_feature_path = FEATURE_DIR + MODEL_NAME[:-1] +'_' +phase+'_feature.csv'
+    save_feature_path = FEATURE_DIR + MODEL_NAME +'_' +phase+'_feature.csv'
     pd_feature.to_csv(save_feature_path)
