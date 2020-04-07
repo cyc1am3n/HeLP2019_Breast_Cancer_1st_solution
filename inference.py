@@ -56,8 +56,12 @@ def main():
 
     ## load features
     pd_feature = pd.read_csv(train_feature_path,index_col = [0])
+    ## this is for prediction only by A feature.
     best_auc_col , best_acc_col, best_acc_threshold = check_train_score(pd_feature)
-
+    ## the best model of metastasis prediction 2nd stage model 
+    best_model_meta = stage2_train_meta(pd_feature)
+    ## the best model of major-axis prediction 2nd stage model 
+    best_model_major = stage2_train_meta(pd_feature)
     ## load meta
     e1_meta = pd.read_csv(RESULTS_PATH + E1_meta,index_col = [0])
     e2_major = pd.read_csv(RESULTS_PATH + E2_major, index_col = [0])
@@ -99,17 +103,23 @@ def main():
                 e2_major_list[i] = 0
             
     else :
-        # test 2 phase
+        # test 2 phase - only SNU dataset
         phase = 'test2'
         print('test2 phase predict...')
-
-        best_auc_col = 5 # 4, 5, 11, 12, 18, 19 
-        best_acc_col = 16 # 0, 2, 7, 9, 14, 16 (best 로 바꿔서 제출)
-        best_acc_threshold = 500
+    
+        ## load feature for test 2phase
         pd_feature = pd.read_csv(test2_feature_path,index_col = [0])
+            
+        ## prediction by only one feature
+        best_auc_col = 5 # 4, 5, 11, 12, 18, 19  # max probability value of the given probability heatmap
+        best_acc_col = 16 # 0, 2, 7, 9, 14, 16 (best 로 바꿔서 제출)  # major axis of the given probability heatmap
+        best_acc_threshold = 500
         e1_meta_list = pd_feature.iloc[:,best_auc_col].tolist() # 
         e2_major_list = np.array(pd_feature.iloc[:,best_acc_col].tolist()) / 1.76
 
+        ## prediction by 2nd stage model
+        e1_meta_list, e2_major_list = stage2_predict(pd_feature, best_model_meta, best_model_major)
+        
         for i in range(len(e2_major_list)):
             if e2_major_list[i] < best_acc_threshold :
                 e2_major_list[i] = 0
