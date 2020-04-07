@@ -168,7 +168,8 @@ def stage2_predict(pd_feature, b_me, b_ma):
     y_ma = b_ma.predict(x2)
 
     y_ma = np.exp(y_ma) - 1
-    y_ma = y_ma / 1.76
+    if len(pd_feature) > 108: # for SNU dataset
+      y_ma = y_ma / 1.76
     for i in range(len(y_ma)):
       if y_ma[i] < 500:
         y_ma[i] = 0
