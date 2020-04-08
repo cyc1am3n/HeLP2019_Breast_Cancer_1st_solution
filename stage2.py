@@ -152,33 +152,143 @@ def stage2(pd_feature):
 
     return random_model_meta, random_model_major
 
-def stage2_predict(pd_feature, m_me, m_ma):
-    #pd_feature.drop(drop_columns, axis='columns', inplace=True)
-    pd_feature.drop(pd_feature.columns[drop_indexes], axis='columns', inplace=True)
-    print(pd_feature)
-    x = np.array(pd_feature.values)
-    scaler1 = MinMaxScaler()
+def stage2_predict(pd_feature, b_me, b_ma):
+
+    pd_feature_1 = pd_feature.iloc[:,test2_pick_indexes]
+    print('test2 meta : ',pd_feature_1.columns)
+    x = np.array(pd_feature_1.values)
     scaler2 = StandardScaler()
-
-    if len(pd_feature.values) == 107:
-      x1 = scaler2.fit_transform(x[:61])
-      x2 = scaler2.fit_transform(x[61:])
-      y_me_1 = m_me.predict(x1)
-      y_me_2 = m_me.predict(x2)
-
-      y_me = np.append(y_me_1, y_me_2)
-  
-    else : 
-      x2 = scaler2.fit_transform(x)
-      y_me = m_me.predict(x2)
-    
     x2 = scaler2.fit_transform(x)
-    y_ma = m_ma.predict(x2)
+    y_me = b_me.predict(x2)
+
+    print('test2 major : ',pd_feature.columns)
+    x = np.array(pd_feature.values)
+    scaler2 = StandardScaler()
+    x2 = scaler2.fit_transform(x)
+    y_ma = b_ma.predict(x2)
 
     y_ma = np.exp(y_ma) - 1
-    
+    if len(pd_feature) > 108: # for SNU dataset
+      y_ma = y_ma / 1.76
     for i in range(len(y_ma)):
+      if y_ma[i] < 500:
         y_ma[i] = 0
-    
-    print(len(y_me), len(y_ma))
+  
     return y_me, y_ma
+  
+  
+RESIZE_LIST = [4,16,64]
+
+train_pick_indexes = [1,7,8,9,10, 12,18,19,20,21, 23,29,30,31,32]
+test2_pick_indexes = [1,3,4,5,6,  8,9,11,12,13,   15,17,18,19,20]
+def stage2_train_meta(pd_feature):
+  print('train meta : ',pd_feature.columns)
+  
+  #pd_feature.drop(pd_feature.columns[drop_indexes], axis='columns', inplace=True)
+  pd_feature = pd_feature.iloc[:,train_pick_indexes]
+  x = np.array(pd_feature.values)
+  scaler2 = StandardScaler()
+  x2 = scaler2.fit_transform(x)
+
+  label_df = pd.read_csv(LABEL_PATH)
+  y_meta = np.array(label_df.metastasis.tolist())
+  y_major_axis = np.array(label_df.major_axis.tolist())
+  y_major_axis_log = np.log(y_major_axis + 1) # 나중에 꼭 e 과 1 빼주기
+
+  names = ["RFR"]
+  for i in range(len(ml_models)):
+    model = ml_models[i]
+    model.fit(x2,y_meta)
+    auc_score = roc_auc_score(y_meta, model.predict(x2))
+    print(names[i],' roc_auc_score : ',auc_score)
+  
+  print(model.feature_importances_)
+  return model
+
+
+train_pick_indexes_major = [0,1,6,7,8,9,10, 11,12,17,18,19,20,21, 22,23,28,29,30,31,32]
+def stage2_train_major(pd_feature):
+  
+  pd_feature = pd_feature.iloc[:,train_pick_indexes_major]
+  print('train major : ',pd_feature.columns)
+  #pd_feature.drop(pd_feature.columns[drop_indexes], axis='columns', inplace=True)
+  x = np.array(pd_feature.values)
+  scaler2 = StandardScaler()
+  x2 = scaler2.fit_transform(x)
+
+  label_df = pd.read_csv(LABEL_PATH)
+  y_meta = np.array(label_df.metastasis.tolist())
+  y_major_axis = np.array(label_df.major_axis.tolist())
+  y_major_axis_log = np.log(y_major_axis + 1) # 나중에 꼭 e 과 1 빼주기
+
+  names = ["RFR"]
+  for i in range(len(ml_models)):
+    model = ml_models[i]
+    model.fit(x2,y_major_axis_log)
+    pred = model.predict(x2)
+    pred = np.exp(pred) - 1
+
+    for i in range(len(pred)):
+      if pred[i] < 500:
+        pred[i] = 0
+    acc_sc = acc_score(y_major_axis, pred)
+    print('major_axis, acc score : ',acc_sc)
+  
+  print(model.feature_importances_)
+  return model
+  
+def check_train_score(pd_feature):
+  LABEL_PATH = '/data/train/label.csv'
+  label_df = pd.read_csv(LABEL_PATH)
+  y_meta = np.array(label_df.metastasis.tolist())
+  y_major_axis = np.array(label_df.major_axis.tolist())
+
+  # check train meta score
+  cols_name = list(pd_feature.columns)
+  best_auc = 0
+  best_auc_col = 0
+  for i in range(len(cols_name)):
+
+      col_idx = i
+      col_name = cols_name[col_idx]
+      predict_meta = pd_feature.iloc[:,col_idx].tolist()
+
+      auc_score = roc_auc_score(y_meta, predict_meta)
+      print(col_name, 'AUC score : ',auc_score)
+
+      if best_auc < auc_score :
+          best_auc = auc_score
+          best_auc_col = col_idx
+  
+  # check train major_axis score
+  best_threshold = 0
+  best_acc_sc = 0
+  major_cols = [0,2,4,6,11,13,15,17, 22,24,26,28]
+  for i in range(len(major_cols)):
+      col_idx = major_cols[i]
+      col_name = cols_name[col_idx] 
+      predict_major = np.array(pd_feature.iloc[:, col_idx].tolist()) * 1.757
+      
+      acc_sc = acc_score(y_major_axis, predict_major)
+      print('--------------------------------------')
+      print(col_name, 'ACC score : ',acc_sc)
+      ## 
+      print('----------- set thresholds ----------')
+
+      
+      thresholds = [50,100,250, 300,350,400,450,500,550,600,1000]
+      for j in range(len(thresholds)):
+          threshold = thresholds[j]
+          tmp_major = []
+          for k in range(len(predict_major)):
+              if predict_major[k] < threshold:
+                  tmp_major.append(0)
+              else :
+                  tmp_major.append(predict_major[k])
+          acc_sc = acc_score(y_major_axis, tmp_major)
+          print(threshold, ' threshold acc_score : ',acc_sc)
+          if acc_sc > best_acc_sc :
+              best_acc_sc = acc_sc
+              best_threshold = threshold
+              best_acc_col = col_idx
+  return best_auc_col , best_acc_col, best_threshold
