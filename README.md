@@ -13,7 +13,7 @@ This repository is **1st place solution** to the **Breast Cancer Classification 
 - Feature extraction from probability heatmap
 - Prediction final probability and major axis based on features
 
-And also, you can see detailed model description from [this link](./assets/slide.pdf).
+And also, please click [this link](./assets/slide.pdf) to see the detailed model description.
 
 ## Dependencies
 - keras
@@ -27,14 +27,14 @@ And also, you can see detailed model description from [this link](./assets/slide
 
 ## Usage
 ### Train
-Run the `train.sh`.  
+Run the `train.py`.  
 ```bash
-$ sh train.sh
+$ python train.py
 ```
 ### Inference
-Run the `inference.py`.
+Run the `inference.sh`.
 ```bash
-$ python inference.py
+$ sh inference.sh
 ```
 
 ## Authors
