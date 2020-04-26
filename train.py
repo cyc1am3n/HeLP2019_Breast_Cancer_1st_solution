@@ -54,7 +54,7 @@ if __name__ == "__main__":
                                 is_norm=args.stain_norm,
                                 target_norm_path='./preprocess/target_norm.png',
                                 mode='train',
-                                server='kakao')
+                                server='local')
         preprocess.save_patches()
     else:
         print('Already Preprocessed.')
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     patch_loader = PatchLoader(n_kfold=args.n_folds, 
                                seed=args.seed, 
                                use_norm=args.stain_norm, 
-                               server='kakao')
+                               server='local')
     all_patches_sample = patch_loader.get_all_patches()
     folds = patch_loader.split_sample()
 
