@@ -26,8 +26,12 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int, default=32)
     parser.add_argument('--patch_size', type=int, default=256)
     parser.add_argument('--n_folds', type=int, default=3)
-    parser.add_argument('--preprocess', type=bool, default=True)
-    parser.add_arguemtn('--stain_norm', type=bool, default=True)
+    parser.add_argument('--preprocess',
+                            type=lambda x: True if x == 'True' else False,
+                            default=True)
+    parser.add_argument('--stain_norm',
+                            type=lambda x: True if x == 'True' else False,
+                            default=True)
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--ckpt_dir', type=str, default='/data/volume/model/')
     parser.add_argument('--model_name', type=str, default='fpn_model/')
@@ -35,6 +39,8 @@ if __name__ == "__main__":
 
     TRAIN_DIR, LABEL_PATH = '/data/train', '/data/train/label.csv'
     CKPT_DIR, MODEL_NAME = args.ckpt_dir, args.model_name
+    PREPROCESS = arg.preprocess
+    N_KFOLD = args.n_folds
 
     random.seed(args.seed)
     np.random.seed(args.seed)

@@ -25,6 +25,9 @@ def stain_patch_dir(PATCHES_DIR, slide_pathes):
 
 
 def set_directory(CKPT_DIR, MODEL_NAME):
+    path1, path2 = os.path.split(CKPT_DIR[:-1])
+    if not os.path.isdir(path1):
+        os.mkdir(path1)
     if not os.path.isdir(CKPT_DIR):
         os.mkdir(CKPT_DIR)
     if not os.path.isdir(CKPT_DIR + MODEL_NAME):

@@ -26,6 +26,44 @@ And also, please click [this link](./assets/slide.pdf) to see the detailed model
 - skimage
 
 ## Usage
+
+### Dataset
+
+```bash
+data
+	└── train
+			├── level4
+			│		├── Image
+			│		│		├── slide_001.png
+			│		│		├── ...
+			│		│		└── slide_#.png
+            │       └── Mask
+            │       		├── mask_001.png
+			│				├── ...
+			│				└── mask_#.png
+            └── label.csv
+            
+========= After training, the directories are created as below. =========
+
+	└── volume
+	    ├── dataset
+	 		│		└── level4 
+	 		│					├── img
+	 		│					│		├── slide001_patch001.png
+	 		│					│		├── ...
+	 		│					│		└── slide#_patch#.png
+	 		│					└── mask
+	 		│							├── mask001_patch001.png
+	 		│							├── ...
+	 		│							└── mask#_patch#.png
+	 		└── model
+	 			└── fpn_weights.h5
+	    └── heatmap
+	    	...
+```
+
+
+
 ### Train
 Run the `train.py`.  
 ```bash

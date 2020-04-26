@@ -23,16 +23,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='parser')
     parser.add_argument('--seed', type=int, default=42)
     parser.add_argument('--patch_size', type=int, default=256)
-    parser.add_argument('--is_preprocessed', type=bool, default=False)
+    parser.add_argument('--is_preprocessed',
+                            type=lambda x: True if x == 'True' else False,
+                            default=True)
     parser.add_argument('--model_name', type=str, default='fpn_model')
     parser.add_argument('--model_weight', type=str, default='2_fold_fpn_best_model.h5')
-    parser.add_argument('--ckpt_dir', type=str, default='/data/volume/model/')
-    parser.add_argument('--heatmap_dir', type=str, default='/data/volume/heatmap/')
-    parser.add_argument('--feature_dir', type=str, default='/data/volume/feature/')
-    parser.add_argument('--patches_dir', type=str, default='/data/volume/patches/rescale/')
+    parser.add_argument('--ckpt_dir', type=str, default='./data/volume/model/')
+    parser.add_argument('--heatmap_dir', type=str, default='./data/volume/heatmap/')
+    parser.add_argument('--feature_dir', type=str, default='./data/volume/feature/')
+    parser.add_argument('--patches_dir', type=str, default='./data/volume/patches/rescale/')
     args = parser.parse_args()
 
-    TRAIN_DIR, LABEL_PATH = '/data/train', '/data/train/label.csv'
+    TRAIN_DIR, LABEL_PATH = './data/train', './data/train/label.csv'
     MODEL_NAME, HEATMAP_DIR, FEATURE_DIR, PATCHES_DIR = args.model_name, args.heatmap_dir, args.feature_dir, args.patches_dir
 
     random.seed(args.seed)

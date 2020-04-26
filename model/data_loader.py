@@ -19,13 +19,13 @@ class PatchLoader:
         
         if server == 'local':
             if use_norm:
-                self.patches_mask_path = '../data/volume/dataset/level4/img_norm/'
-                self.patches_mask_path = '../data/volume/dataset/level4/mask_norm/'
-                self.img_mask_pairs_path = '../data/volume/dataset/level4/img_mask_norm_pairs.pkl'
+                self.patches_mask_path = './data/volume/dataset/level4/img_norm/'
+                self.patches_mask_path = './data/volume/dataset/level4/mask_norm/'
+                self.img_mask_pairs_path = './data/volume/dataset/level4/img_mask_norm_pairs.pkl'
             else:
-                self.patches_mask_path = '../data/volume/dataset/level4/img/'
-                self.patches_mask_path = '../data/volume/dataset/level4/mask/'
-                self.img_mask_pairs_path = '../data/volume/dataset/level4/img_mask_pairs.pkl'
+                self.patches_mask_path = './data/volume/dataset/level4/img/'
+                self.patches_mask_path = './data/volume/dataset/level4/mask/'
+                self.img_mask_pairs_path = './data/volume/dataset/level4/img_mask_pairs.pkl'
         elif server == 'kakao':
             if use_norm:
                 self.patches_img_path = '/data/volume/dataset/level4/img_norm/'

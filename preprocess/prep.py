@@ -29,7 +29,7 @@ class Preprocess:
             phase = 'train'
         else:
             phase = 'test'
-        
+
         self.mode = mode
         self.patch_size = patch_size
         self.server = server
@@ -44,28 +44,26 @@ class Preprocess:
                 self.patches_img_norm_path = '/data/volume/dataset/level4/img_norm/'
                 self.patches_mask_norm_path = '/data/volume/dataset/level4/mask_norm/'
         elif self.server == 'local':
-            self.slide_dir = f'../data/{phase}/level4/Image/'
-            self.mask_dir = f'../data/{phase}/level4/Mask/'
-            self.img_mask_pairs_path = '../data/volume/dataset/level4/'
-            self.patches_img_path = '../data/volume/dataset/level4/img/'
-            self.patches_mask_path = '../data/volume/dataset/level4/mask/'
+            self.slide_dir = f'./data/{phase}/level4/Image/'
+            self.mask_dir = f'./data/{phase}/level4/Mask/'
+            self.img_mask_pairs_path = './data/volume/dataset/level4/'
+            self.patches_img_path = './data/volume/dataset/level4/img/'
+            self.patches_mask_path = './data/volume/dataset/level4/mask/'
             if is_norm:
-                self.patches_img_norm_path = '../data/volume/dataset/level4/img_norm/'
-                self.patches_mask_norm_path = '../data/volume/dataset/level4/mask_norm/'
+                self.patches_img_norm_path = './data/volume/dataset/level4/img_norm/'
+                self.patches_mask_norm_path = './data/volume/dataset/level4/mask_norm/'
         
         if is_norm:
             print('*'*20, 'Color Normalization : True', '*'*20)
             self.is_norm = is_norm
             self.normalizer = self.stain_norm_func(target_norm_path)
         
-        self.mode = 'inference'
-        
     
     def _make_directory(self):
         '''학습 시킬 데이터셋(patches)을 저장하는 함수'''
 
         if self.server == 'local':
-            dir_path = '../data/volume'
+            dir_path = './data/volume'
         elif self.server == 'kakao':
             dir_path = '/data/volume'
 
@@ -168,7 +166,7 @@ class Preprocess:
                 samples = patches
                 samples.loc[:, 'is_tumor'] = False
 
-        if self.mode == 'inference':
+        if self.mode == 'test':
             # Inference pahse
             positive = 0
             samples = patches
